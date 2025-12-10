@@ -2,7 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 import {
   Phone,
   Mail,
@@ -15,15 +17,19 @@ import {
   ArrowRight,
   Building,
   Truck,
-  CheckCircle
+  CheckCircle,
+  Menu
 } from "lucide-react";
 
 const Index = () => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   const handleNavigation = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
+    setMobileMenuOpen(false);
   };
 
   const services = [
@@ -107,13 +113,51 @@ const Index = () => {
               </Button>
             </nav>
 
-            {/* Mobile menu button */}
+            {/* Mobile menu */}
             <div className="md:hidden">
-              <Button variant="ghost" size="sm">
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              </Button>
+              <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="sm">
+                    <Menu className="h-6 w-6" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent>
+                  <SheetHeader>
+                    <SheetTitle>Menu</SheetTitle>
+                  </SheetHeader>
+                  <nav className="flex flex-col space-y-4 mt-8">
+                    <button
+                      onClick={() => handleNavigation('services')}
+                      className="text-left text-lg text-gray-700 hover:text-amber-600 transition-colors py-2"
+                    >
+                      Services
+                    </button>
+                    <Link
+                      to="/projects"
+                      className="text-left text-lg text-gray-700 hover:text-amber-600 transition-colors py-2"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Projects
+                    </Link>
+                    <button
+                      onClick={() => handleNavigation('about')}
+                      className="text-left text-lg text-gray-700 hover:text-amber-600 transition-colors py-2"
+                    >
+                      About
+                    </button>
+                    <button
+                      onClick={() => handleNavigation('contact')}
+                      className="text-left text-lg text-gray-700 hover:text-amber-600 transition-colors py-2"
+                    >
+                      Contact
+                    </button>
+                    <Button className="bg-amber-500 hover:bg-amber-600 mt-4">
+                      <Phone className="h-4 w-4 mr-2" />
+                      Call Now
+                    </Button>
+                  </nav>
+                </SheetContent>
+              </Sheet>
             </div>
           </div>
         </div>
@@ -152,7 +196,7 @@ const Index = () => {
             <div className="relative">
               <div className="bg-white/10 rounded-2xl p-8 flex items-center justify-center">
                 <img
-                  src="/logo.png"
+                  src="./logo.png"
                   alt="EICON Builders Logo"
                   className="w-full h-auto object-contain"
                 />
@@ -298,7 +342,7 @@ const Index = () => {
             <div className="relative">
               <div className="aspect-square bg-gray-200 rounded-2xl overflow-hidden">
                 <img
-                  src="/placeholder.svg"
+                  src="./placeholder.svg"
                   alt="EICON Builders team at work"
                   className="w-full h-full object-cover"
                 />
