@@ -5,6 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 import {
   Phone,
   Mail,
@@ -18,11 +19,22 @@ import {
   Building,
   Truck,
   CheckCircle,
-  Menu
+  Menu,
+  Facebook
 } from "lucide-react";
 
 const Index = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    projectType: "",
+    projectDetails: ""
+  });
 
   const handleNavigation = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -32,57 +44,84 @@ const Index = () => {
     setMobileMenuOpen(false);
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      // Web3Forms endpoint
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          access_key: "YOUR_WEB3FORMS_ACCESS_KEY_HERE", // Replace with your Web3Forms access key
+          name: `${formData.firstName} ${formData.lastName}`,
+          email: formData.email,
+          phone: formData.phone,
+          project_type: formData.projectType,
+          message: formData.projectDetails,
+          subject: "New Quote Request from EICON Website",
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        toast({
+          title: "Message Sent!",
+          description: "Thank you for your inquiry. We'll get back to you soon.",
+        });
+        // Reset form
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          phone: "",
+          projectType: "",
+          projectDetails: ""
+        });
+      } else {
+        throw new Error("Failed to send message");
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send message. Please try again or contact us directly.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const services = [
     {
       icon: Home,
-      title: "Custom Home Building",
-      description: "From concept to completion, we build your dream home with attention to every detail."
+      title: "Construction Services",
+      description: "We build durable and reliable structures for residential, commercial, and industrial projects."
     },
     {
       icon: Building,
-      title: "Subdivision Development",
-      description: "Complete subdivision planning and development with modern infrastructure."
-    },
-    {
-      icon: Hammer,
-      title: "Renovation & Remodeling",
-      description: "Transform your existing space with our expert renovation services."
+      title: "Building Materials Supply",
+      description: "We provide high-quality construction materials sourced from trusted suppliers."
     },
     {
       icon: Truck,
-      title: "Building Supply",
-      description: "Quality materials and supplies for contractors and DIY enthusiasts."
-    }
-  ];
-
-  const stats = [
-    { number: "500+", label: "Homes Built" },
-    { number: "25+", label: "Years Experience" },
-    { number: "50+", label: "Subdivisions" },
-    { number: "100%", label: "Satisfaction" }
-  ];
-
-  const recentProjects = [
-    {
-      title: "Sunset Ridge Subdivision",
-      location: "North Valley",
-      homes: 24,
-      status: "Completed",
-      image: "/placeholder.svg"
+      title: "Material Delivery Support",
+      description: "We ensure fast, reliable, and hassle-free delivery of construction materials straight to your project site."
     },
     {
-      title: "Pine Valley Commons",
-      location: "West Side",
-      homes: 32,
-      status: "In Progress",
-      image: "/placeholder.svg"
-    },
-    {
-      title: "Heritage Oaks",
-      location: "South District",
-      homes: 15,
-      status: "Completed",
-      image: "/placeholder.svg"
+      icon: Hammer,
+      title: "Renovation and Remodeling",
+      description: "Transform your existing space with our expert renovation services."
     }
   ];
 
@@ -97,20 +136,19 @@ const Index = () => {
                 <Home className="h-6 w-6 text-gray-900" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">EICON Builders and Supply</h1>
-                <p className="text-xs text-gray-500">Building Dreams Since 1999</p>
+                <h1 className="text-xl font-bold text-gray-900">EICON Builders & Supply Inc.</h1>
+                <p className="text-xs text-gray-500">Every Build is an icon of trust</p>
               </div>
             </div>
 
             <nav className="hidden md:flex items-center space-x-8">
               <button onClick={() => handleNavigation('services')} className="text-gray-700 hover:text-amber-600 transition-colors">Services</button>
-              <Link to="/projects" className="text-gray-700 hover:text-amber-600 transition-colors">Projects</Link>
+              <Link to="/projects" className="text-gray-700 hover:text-amber-600 transition-colors">Our Process</Link>
               <button onClick={() => handleNavigation('about')} className="text-gray-700 hover:text-amber-600 transition-colors">About</button>
               <button onClick={() => handleNavigation('contact')} className="text-gray-700 hover:text-amber-600 transition-colors">Contact</button>
-              <Button size="sm" className="bg-amber-500 hover:bg-amber-600">
-                <Phone className="h-4 w-4 mr-2" />
-                Call Now
-              </Button>
+              <a href="https://www.facebook.com/eiconbuilders" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-amber-600 transition-colors">
+                <Facebook className="h-5 w-5" />
+              </a>
             </nav>
 
             {/* Mobile menu */}
@@ -137,7 +175,7 @@ const Index = () => {
                       className="text-left text-lg text-gray-700 hover:text-amber-600 transition-colors py-2"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      Projects
+                      Our Process
                     </Link>
                     <button
                       onClick={() => handleNavigation('about')}
@@ -151,10 +189,16 @@ const Index = () => {
                     >
                       Contact
                     </button>
-                    <Button className="bg-amber-500 hover:bg-amber-600 mt-4">
-                      <Phone className="h-4 w-4 mr-2" />
-                      Call Now
-                    </Button>
+                    <a
+                      href="https://www.facebook.com/eiconbuilders"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center text-left text-lg text-gray-700 hover:text-amber-600 transition-colors py-2"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Facebook className="h-5 w-5 mr-2" />
+                      Facebook
+                    </a>
                   </nav>
                 </SheetContent>
               </Sheet>
@@ -168,14 +212,13 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <Badge className="bg-amber-500 text-gray-900 mb-4">Trusted Since 1999</Badge>
+              <Badge className="bg-amber-500 text-gray-900 mb-4">Committed to Quality You Can Trust</Badge>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-                Building Quality Homes in
-                <span className="text-amber-400">Your Community</span>
+                We build. We supply.
+                <span className="text-amber-400">&nbsp;We deliver.</span>
               </h1>
               <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-                EICON Builders and Supply specializes in custom home construction and subdivision development.
-                We combine traditional craftsmanship with modern techniques to create homes that last.
+                We provide reliable construction services and high-grade materials for residential, commercial, and industrial projects. From planning to delivery, our team ensures durability, precision, and on-time service every step of the way.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button size="lg" className="bg-amber-500 text-gray-900 hover:bg-amber-600">
@@ -196,7 +239,7 @@ const Index = () => {
             <div className="relative">
               <div className="bg-white/10 rounded-2xl p-8 flex items-center justify-center">
                 <img
-                  src="./logo.png"
+                  src="./logo_only.jpg"
                   alt="EICON Builders Logo"
                   className="w-full h-auto object-contain"
                 />
@@ -206,7 +249,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Stats Section */}
+      {/* Stats Section 
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -219,6 +262,7 @@ const Index = () => {
           </div>
         </div>
       </section>
+      */}
 
       {/* Services Section */}
       <section id="services" className="py-20">
@@ -253,88 +297,38 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Recent Projects Preview */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Recent Projects</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Take a look at some of our latest subdivision developments and custom home projects.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-            {recentProjects.map((project, index) => (
-              <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="aspect-video bg-gray-200">
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <CardHeader>
-                  <CardTitle className="text-lg">{project.title}</CardTitle>
-                  <CardDescription className="flex items-center justify-between">
-                    <span className="flex items-center">
-                      <MapPin className="h-4 w-4 mr-1" />
-                      {project.location}
-                    </span>
-                    <Badge variant={project.status === 'Completed' ? 'default' : 'secondary'}>
-                      {project.status}
-                    </Badge>
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-600">{project.homes} homes</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          <div className="text-center">
-            <Link to="/projects">
-              <Button size="lg" className="bg-amber-500 hover:bg-amber-600">
-                View All Projects
-                <ArrowRight className="h-5 w-5 ml-2" />
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
-
       {/* About Section */}
       <section id="about" className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">About EICON Builders</h2>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">About EICON Builders & Supply Inc.</h2>
               <p className="text-lg text-gray-600 mb-6">
-                For over 25 years, EICON Builders and Supply has been a trusted name in residential construction
-                and building supplies. We specialize in creating quality subdivisions and custom homes that
-                families are proud to call home.
+                EICON Builders & Supply Inc. is a newly established construction and building materials provider committed to delivering reliable, high-quality services for residential and small commercial projects. We aim to become a trusted partner for homeowners, contractors, and businesses by offering dependable workmanship and durable construction materials at fair and honest pricing.
+                Although our company is new, our team brings practical experience in construction support, site coordination, and materials sourcing. We focus on delivering straightforward, well-managed services that help clients complete their projects smoothly and efficiently.
               </p>
               <p className="text-lg text-gray-600 mb-8">
                 Our commitment to excellence, attention to detail, and customer satisfaction has made us
                 the preferred choice for homeowners and contractors throughout the region.
+
               </p>
 
               <div className="space-y-4">
                 <div className="flex items-center">
                   <CheckCircle className="h-6 w-6 text-amber-500 mr-3" />
-                  <span className="text-gray-700">Licensed and Insured</span>
+                  <span className="text-gray-700">Quality & Reliability</span>
                 </div>
                 <div className="flex items-center">
                   <CheckCircle className="h-6 w-6 text-amber-500 mr-3" />
-                  <span className="text-gray-700">25+ Years of Experience</span>
+                  <span className="text-gray-700">Customer-Centered Service</span>
                 </div>
                 <div className="flex items-center">
                   <CheckCircle className="h-6 w-6 text-amber-500 mr-3" />
-                  <span className="text-gray-700">Quality Materials & Craftsmanship</span>
+                  <span className="text-gray-700">Efficient Delivery</span>
                 </div>
                 <div className="flex items-center">
                   <CheckCircle className="h-6 w-6 text-amber-500 mr-3" />
-                  <span className="text-gray-700">Full-Service Construction & Supply</span>
+                  <span className="text-gray-700">Honest Workmanship</span>
                 </div>
               </div>
             </div>
@@ -342,7 +336,7 @@ const Index = () => {
             <div className="relative">
               <div className="aspect-square bg-gray-200 rounded-2xl overflow-hidden">
                 <img
-                  src="./placeholder.svg"
+                  src="./logo.png"
                   alt="EICON Builders team at work"
                   className="w-full h-full object-cover"
                 />
@@ -374,7 +368,7 @@ const Index = () => {
                     </div>
                     <div>
                       <h4 className="font-semibold text-lg mb-1">Phone</h4>
-                      <p className="text-gray-300">(555) 123-4567</p>
+                      <p className="text-gray-300">+63 950 751 3820</p>
                       <p className="text-gray-400 text-sm">Monday - Friday, 8:00 AM - 6:00 PM</p>
                     </div>
                   </div>
@@ -385,7 +379,7 @@ const Index = () => {
                     </div>
                     <div>
                       <h4 className="font-semibold text-lg mb-1">Email</h4>
-                      <p className="text-gray-300">info@eiconbuilders.com</p>
+                      <p className="text-gray-300">eicon.buildersandsupply@gmail.com</p>
                       <p className="text-gray-400 text-sm">We'll respond within 24 hours</p>
                     </div>
                   </div>
@@ -396,8 +390,8 @@ const Index = () => {
                     </div>
                     <div>
                       <h4 className="font-semibold text-lg mb-1">Office Location</h4>
-                      <p className="text-gray-300">1234 Construction Way</p>
-                      <p className="text-gray-300">Builder City, BC 12345</p>
+                      <p className="text-gray-300">Banuyo St., Lot 11, Block 45, Canlaon View Subd.,</p>
+                      <p className="text-gray-300">Brgy. Blumentritt, Murcia Neg. Occ. 6129</p>
                     </div>
                   </div>
 
@@ -425,68 +419,100 @@ const Index = () => {
                     Fill out the form below and we'll get back to you with a detailed quote for your project.
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <CardContent>
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                        <input
+                          type="text"
+                          name="firstName"
+                          value={formData.firstName}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+                          placeholder="John"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                        <input
+                          type="text"
+                          name="lastName"
+                          value={formData.lastName}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+                          placeholder="Dela Cruz"
+                          required
+                        />
+                      </div>
+                    </div>
+
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
                       <input
-                        type="text"
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
-                        placeholder="John"
+                        placeholder="sample@example.com"
+                        required
                       />
                     </div>
+
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
                       <input
-                        type="text"
+                        type="tel"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleInputChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
-                        placeholder="Doe"
+                        placeholder="+63 950 751 3820"
+                        required
                       />
                     </div>
-                  </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                    <input
-                      type="email"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
-                      placeholder="john@example.com"
-                    />
-                  </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Project Type</label>
+                      <select
+                        name="projectType"
+                        value={formData.projectType}
+                        onChange={handleInputChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        required
+                      >
+                        <option value="">Select a project type</option>
+                        <option value="construction-service">Construction Service</option>
+                        <option value="building-materials-supply">Building Materials Supply</option>
+                        <option value="material-delivery-support">Material Delivery Support</option>
+                        <option value="renovation-remodeling">Renovation and Remodeling</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
-                    <input
-                      type="tel"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
-                      placeholder="(555) 123-4567"
-                    />
-                  </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Project Details</label>
+                      <textarea
+                        name="projectDetails"
+                        value={formData.projectDetails}
+                        onChange={handleInputChange}
+                        rows={4}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        placeholder="Tell us about your project..."
+                        required
+                      ></textarea>
+                    </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Project Type</label>
-                    <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500">
-                      <option value="">Select a project type</option>
-                      <option value="custom-home">Custom Home</option>
-                      <option value="subdivision">Subdivision Development</option>
-                      <option value="renovation">Renovation/Remodeling</option>
-                      <option value="supplies">Building Supplies</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Project Details</label>
-                    <textarea
-                      rows={4}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
-                      placeholder="Tell us about your project..."
-                    ></textarea>
-                  </div>
-
-                  <Button className="w-full bg-amber-500 hover:bg-amber-600">
-                    Send Message
-                  </Button>
+                    <Button
+                      type="submit"
+                      className="w-full bg-amber-500 hover:bg-amber-600"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? "Sending..." : "Send Message"}
+                    </Button>
+                  </form>
                 </CardContent>
               </Card>
             </div>
@@ -505,7 +531,7 @@ const Index = () => {
                 </div>
                 <div>
                   <h3 className="text-xl font-bold">EICON Builders and Supply</h3>
-                  <p className="text-gray-400 text-sm">Building Dreams Since 1999</p>
+                  <p className="text-gray-400 text-sm">Every Build is an icon of trust</p>
                 </div>
               </div>
               <p className="text-gray-400 mb-4 max-w-md">
@@ -518,7 +544,7 @@ const Index = () => {
               <h4 className="font-semibold mb-4">Quick Links</h4>
               <ul className="space-y-2 text-gray-400">
                 <li><button onClick={() => handleNavigation('services')} className="hover:text-amber-400 transition-colors">Services</button></li>
-                <li><Link to="/projects" className="hover:text-amber-400 transition-colors">Projects</Link></li>
+                <li><Link to="/projects" className="hover:text-amber-400 transition-colors">Our Process</Link></li>
                 <li><button onClick={() => handleNavigation('about')} className="hover:text-amber-400 transition-colors">About</button></li>
                 <li><a href="#contact" className="hover:text-amber-400 transition-colors">Contact</a></li>
               </ul>
@@ -527,9 +553,9 @@ const Index = () => {
             <div>
               <h4 className="font-semibold mb-4">Contact Info</h4>
               <ul className="space-y-2 text-gray-400">
-                <li>(555) 123-4567</li>
-                <li>info@eiconbuilders.com</li>
-                <li>1234 Construction Way<br />Builder City, BC 12345</li>
+                <li>+63 950 751 3820</li>
+                <li>eicon.buildersandsupply@gmail.com</li>
+                <li>Banuyo St., Lot 11, Block 45, Canlaon View Subd., <br />Brgy. Blumentritt, Murcia Neg. Occ. 61295</li>
               </ul>
             </div>
           </div>
@@ -538,11 +564,17 @@ const Index = () => {
 
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm">
-              © 2024 EICON Builders and Supply. All rights reserved.
+              © 2025 EICON Builders & Supply Inc. All rights reserved.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              <a href="#" className="text-gray-400 hover:text-amber-400 transition-colors text-sm">Privacy Policy</a>
-              <a href="#" className="text-gray-400 hover:text-amber-400 transition-colors text-sm">Terms of Service</a>
+              <a
+                href="https://www.facebook.com/eicon.buildersPH"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-amber-400 transition-colors"
+              >
+                <Facebook className="h-5 w-5" />
+              </a>
             </div>
           </div>
         </div>

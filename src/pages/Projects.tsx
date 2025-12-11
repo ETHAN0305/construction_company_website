@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, MapPin, Calendar, Home, Phone } from "lucide-react";
+import { ArrowLeft, MessageSquare, MapPin, FileText, Hammer, Truck, CheckCircle, Home } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
 const Projects = () => {
@@ -17,87 +17,44 @@ const Projects = () => {
     }, 100);
   };
 
-  const projects = [
+  const processSteps = [
     {
-      id: 1,
-      title: "Sunset Ridge Subdivision",
-      location: "North Valley",
-      year: "2024",
-      homes: 24,
-      status: "Completed",
-      description: "Modern single-family homes featuring open floor plans, energy-efficient designs, and premium finishes.",
-      features: ["3-4 Bedrooms", "2-3 Bathrooms", "2-Car Garage", "Energy Star Certified"],
-      image: "/placeholder.svg"
+      step: 1,
+      icon: MessageSquare,
+      title: "Initial Consultation",
+      description: "We discuss your project goals, timeline, and requirements."
     },
     {
-      id: 2,
-      title: "Meadowbrook Estates",
-      location: "East Hills",
-      year: "2023",
-      homes: 18,
-      status: "Completed",
-      description: "Luxury custom homes with spacious layouts, high-end materials, and beautiful landscaping.",
-      features: ["4-5 Bedrooms", "3-4 Bathrooms", "3-Car Garage", "Custom Designs"],
-      image: "/placeholder.svg"
+      step: 2,
+      icon: MapPin,
+      title: "Site Assessment & Planning",
+      description: "Our team evaluates the location, materials needed, and overall scope."
     },
     {
-      id: 3,
-      title: "Pine Valley Commons",
-      location: "West Side",
-      year: "2024",
-      homes: 32,
-      status: "In Progress",
-      description: "Affordable family homes with modern amenities and community green spaces.",
-      features: ["2-3 Bedrooms", "2 Bathrooms", "1-2 Car Garage", "Community Park"],
-      image: "/placeholder.svg"
+      step: 3,
+      icon: FileText,
+      title: "Quotation & Materials Planning",
+      description: "We prepare a clear and transparent quotation along with the necessary supplies."
     },
     {
-      id: 4,
-      title: "Heritage Oaks",
-      location: "South District",
-      year: "2023",
-      homes: 15,
-      status: "Completed",
-      description: "Traditional style homes with modern conveniences in a mature neighborhood setting.",
-      features: ["3-4 Bedrooms", "2-3 Bathrooms", "2-Car Garage", "Mature Trees"],
-      image: "/placeholder.svg"
+      step: 4,
+      icon: Hammer,
+      title: "Construction & Execution",
+      description: "Our builders deliver quality workmanship following safety and industry standards."
     },
     {
-      id: 5,
-      title: "Riverside Crossing",
-      location: "Downtown",
-      year: "2024",
-      homes: 28,
-      status: "Planning",
-      description: "Contemporary townhomes and single-family residences near the city center.",
-      features: ["2-4 Bedrooms", "2-3 Bathrooms", "Attached Garage", "Urban Location"],
-      image: "/placeholder.svg"
+      step: 5,
+      icon: Truck,
+      title: "Delivery of Materials",
+      description: "We supply and deliver all required materials on time."
     },
     {
-      id: 6,
-      title: "Mountain View Terrace",
-      location: "Highland Area",
-      year: "2023",
-      homes: 20,
-      status: "Completed",
-      description: "Elevated homes with stunning mountain views and premium outdoor living spaces.",
-      features: ["3-5 Bedrooms", "3-4 Bathrooms", "2-3 Car Garage", "Mountain Views"],
-      image: "/placeholder.svg"
+      step: 6,
+      icon: CheckCircle,
+      title: "Completion & Handover",
+      description: "We ensure the project is completed according to your expectations."
     }
   ];
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Completed":
-        return "bg-amber-100 text-amber-800 border-amber-200";
-      case "In Progress":
-        return "bg-gray-100 text-gray-800 border-gray-200";
-      case "Planning":
-        return "bg-gray-200 text-gray-700 border-gray-300";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -110,20 +67,16 @@ const Projects = () => {
                 <Home className="h-6 w-6 text-gray-900" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">EICON Builders and Supply</h1>
-                <p className="text-xs text-gray-500">Building Dreams Since 1999</p>
+                <h1 className="text-xl font-bold text-gray-900">EICON Builders & Supply Inc.</h1>
+                <p className="text-xs text-gray-500">Every Build is an icon of trust</p>
               </div>
             </Link>
 
             <nav className="hidden md:flex items-center space-x-8">
               <button onClick={() => handleNavigateToSection('services')} className="text-gray-700 hover:text-amber-600 transition-colors">Services</button>
-              <Link to="/projects" className="text-gray-700 hover:text-amber-600 transition-colors">Projects</Link>
+              <Link to="/projects" className="text-amber-600 font-medium transition-colors">Our Process</Link>
               <button onClick={() => handleNavigateToSection('about')} className="text-gray-700 hover:text-amber-600 transition-colors">About</button>
               <button onClick={() => handleNavigateToSection('contact')} className="text-gray-700 hover:text-amber-600 transition-colors">Contact</button>
-              <Button size="sm" className="bg-amber-500 hover:bg-amber-600">
-                <Phone className="h-4 w-4 mr-2" />
-                Call Now
-              </Button>
             </nav>
 
             {/* Mobile menu button */}
@@ -139,70 +92,88 @@ const Projects = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-gray-800 to-gray-900 text-white py-16">
+      <section className="bg-gradient-to-r from-gray-800 to-gray-900 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Our Projects</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-6">Our Process</h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Discover the quality subdivisions and custom homes we've built across the region.
-            Each project represents our commitment to excellence and attention to detail.
+            From initial consultation to project completion, we follow a systematic approach to ensure quality,
+            transparency, and timely delivery of your construction project.
           </p>
         </div>
       </section>
 
-      {/* Projects Grid */}
-      <section className="py-16">
+      {/* Process Steps */}
+      <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {projects.map((project) => (
-              <Card key={project.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="aspect-video bg-gray-200 relative">
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="w-full h-full object-cover"
-                  />
-                  <Badge
-                    className={`absolute top-4 right-4 ${getStatusColor(project.status)}`}
-                    variant="outline"
-                  >
-                    {project.status}
-                  </Badge>
-                </div>
-
-                <CardHeader>
-                  <CardTitle className="text-xl">{project.title}</CardTitle>
-                  <CardDescription className="flex items-center space-x-4 text-sm">
-                    <span className="flex items-center">
-                      <MapPin className="h-4 w-4 mr-1" />
-                      {project.location}
-                    </span>
-                    <span className="flex items-center">
-                      <Calendar className="h-4 w-4 mr-1" />
-                      {project.year}
-                    </span>
-                    <span className="flex items-center">
-                      <Home className="h-4 w-4 mr-1" />
-                      {project.homes} homes
-                    </span>
-                  </CardDescription>
-                </CardHeader>
-
-                <CardContent>
-                  <p className="text-gray-600 mb-4">{project.description}</p>
-
-                  <div className="space-y-2">
-                    <h4 className="font-semibold text-sm text-gray-900">Key Features:</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {project.features.map((feature, index) => (
-                        <Badge key={index} variant="secondary" className="text-xs">
-                          {feature}
-                        </Badge>
-                      ))}
-                    </div>
+            {processSteps.map((step) => {
+              const IconComponent = step.icon;
+              return (
+                <Card key={step.step} className="relative overflow-hidden hover:shadow-xl transition-shadow border-2 border-gray-100">
+                  {/* Step Number Badge */}
+                  <div className="absolute top-4 right-4 w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center">
+                    <span className="text-xl font-bold text-gray-900">{step.step}</span>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
+
+                  <CardHeader className="pt-6">
+                    <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mb-4">
+                      <IconComponent className="h-8 w-8 text-amber-600" />
+                    </div>
+                    <CardTitle className="text-2xl mb-2">{step.title}</CardTitle>
+                  </CardHeader>
+
+                  <CardContent>
+                    <CardDescription className="text-base text-gray-600 leading-relaxed">
+                      {step.description}
+                    </CardDescription>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Why Choose Our Process Section */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Why Our Process Works</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Our structured approach ensures every project is completed with precision, quality, and customer satisfaction.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center p-6">
+              <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CheckCircle className="h-8 w-8 text-amber-600" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Transparent Communication</h3>
+              <p className="text-gray-600">
+                We keep you informed at every stage, ensuring clarity and trust throughout the project.
+              </p>
+            </div>
+
+            <div className="text-center p-6">
+              <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CheckCircle className="h-8 w-8 text-amber-600" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Quality Assurance</h3>
+              <p className="text-gray-600">
+                Every step follows industry standards with regular inspections and quality checks.
+              </p>
+            </div>
+
+            <div className="text-center p-6">
+              <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CheckCircle className="h-8 w-8 text-amber-600" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">On-Time Delivery</h3>
+              <p className="text-gray-600">
+                We value your time and ensure timely completion without compromising quality.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -210,9 +181,9 @@ const Projects = () => {
       {/* CTA Section */}
       <section className="bg-gray-900 text-white py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to Build Your Dream Home?</h2>
+          <h2 className="text-3xl font-bold mb-4">Ready to Start Your Project?</h2>
           <p className="text-xl text-gray-300 mb-8">
-            Contact us today to discuss your custom home or subdivision project.
+            Contact us today for a free consultation and let's discuss how we can bring your vision to life.
           </p>
           <Button size="lg" className="bg-amber-500 hover:bg-amber-600" onClick={() => handleNavigateToSection('contact')}>
             Get In Touch
